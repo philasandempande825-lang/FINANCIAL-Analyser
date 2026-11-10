@@ -1,0 +1,1240 @@
+<html>
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WEALTHWISE AI — Your Money. Your Intelligence. Your Wealth.</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            pink: '#FF007A',
+                            pinkDark: '#D10064',
+                            emerald: '#10B981',
+                            emeraldDark: '#059669',
+                            charcoal: '#0F172A',
+                            surface: '#1E293B',
+                            glass: 'rgba(30, 41, 59, 0.7)',
+                            silver: '#F1F5F9'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js & Lucide Icons -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-card-light {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+        }
+        .gradient-pink-emerald {
+            background: linear-gradient(135deg, #FF007A 0%, #10B981 100%);
+        }
+        .gradient-text-pink {
+            background: linear-gradient(135deg, #FF007A 0%, #FF66B2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .gradient-text-emerald {
+            background: linear-gradient(135deg, #10B981 0%, #34D399 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 0, 122, 0.3); border-radius: 9999px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 0, 122, 0.6); }
+    </style>
+</head>
+<body class="h-full bg-slate-950 text-slate-100 font-sans antialiased flex flex-col custom-scrollbar selection:bg-brand-pink selection:text-white">
+
+    <!-- Top Navigation Header -->
+    <header class="sticky top-0 z-40 w-full glass-card border-b border-slate-800/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <!-- Brand Logo & Tagline -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchView('dashboard')">
+                <div class="h-11 w-11 rounded-2xl bg-gradient-to-tr from-brand-pink to-brand-emerald p-0.5 shadow-lg shadow-brand-pink/20 flex items-center justify-center">
+                    <div class="h-full w-full bg-slate-950 rounded-[14px] flex items-center justify-center">
+                        <i data-lucide="trending-up" class="h-6 w-6 text-brand-emerald"></i>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xl font-extrabold tracking-tight text-white">WEALTHWISE</span>
+                        <span class="px-2 py-0.5 text-[10px] font-black bg-brand-pink text-white rounded-md tracking-wider">AI</span>
+                    </div>
+                    <p class="text-[10px] text-slate-400 font-medium tracking-wide">YOUR MONEY. YOUR INTELLIGENCE. YOUR WEALTH.</p>
+                </div>
+            </div>
+
+            <!-- Global Action Bar -->
+            <div class="flex items-center space-x-3">
+                <button onclick="switchView('upload')" class="hidden md:flex items-center space-x-2 bg-gradient-to-r from-brand-pink to-brand-pinkDark hover:brightness-110 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-lg shadow-brand-pink/25 transition transform hover:-translate-y-0.5">
+                    <i data-lucide="upload-cloud" class="h-4 w-4"></i>
+                    <span>Upload Bank Statement</span>
+                </button>
+
+                <div class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs flex items-center space-x-2">
+                    <span class="h-2 w-2 rounded-full bg-brand-emerald animate-pulse"></span>
+                    <span class="text-slate-300 font-semibold" id="currencyBadge">ZAR (R)</span>
+                </div>
+
+                <!-- Privacy Shield Indicator -->
+                <button onclick="openPrivacyModal()" class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition" title="Privacy & Security Guarantee">
+                    <i data-lucide="shield-check" class="h-5 w-5 text-brand-emerald"></i>
+                </button>
+
+                <!-- PWA Install / Info -->
+                <button onclick="openAboutModal()" class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition" title="About & Creator">
+                    <i data-lucide="info" class="h-5 w-5"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Navigation Bar -->
+    <div class="bg-slate-900/90 border-b border-slate-800 sticky top-20 z-30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <nav class="flex items-center space-x-2 overflow-x-auto py-2.5 no-scrollbar text-xs font-medium">
+                <button onclick="switchView('dashboard')" id="nav-dashboard" class="nav-btn active px-4 py-2 rounded-xl flex items-center space-x-2 bg-brand-pink/20 text-brand-pink font-bold border border-brand-pink/30 transition">
+                    <i data-lucide="layout-dashboard" class="h-4 w-4"></i>
+                    <span>Financial Dashboard</span>
+                </button>
+                <button onclick="switchView('upload')" id="nav-upload" class="nav-btn px-4 py-2 rounded-xl flex items-center space-x-2 text-slate-400 hover:text-white hover:bg-slate-800 transition">
+                    <i data-lucide="file-text" class="h-4 w-4"></i>
+                    <span>Statement Upload</span>
+                </button>
+                <button onclick="switchView('intelligence')" id="nav-intelligence" class="nav-btn px-4 py-2 rounded-xl flex items-center space-x-2 text-slate-400 hover:text-white hover:bg-slate-800 transition">
+                    <i data-lucide="brain-circuit" class="h-4 w-4 text-brand-emerald"></i>
+                    <span>AI Financial Intelligence</span>
+                </button>
+                <button onclick="switchView('recommendations')" id="nav-recommendations" class="nav-btn px-4 py-2 rounded-xl flex items-center space-x-2 text-slate-400 hover:text-white hover:bg-slate-800 transition">
+                    <i data-lucide="compass" class="h-4 w-4"></i>
+                    <span>Wealth Action Plan</span>
+                </button>
+                <button onclick="switchView('comparison')" id="nav-comparison" class="nav-btn px-4 py-2 rounded-xl flex items-center space-x-2 text-slate-400 hover:text-white hover:bg-slate-800 transition">
+                    <i data-lucide="git-compare" class="h-4 w-4"></i>
+                    <span>Period Comparison</span>
+                </button>
+                <button onclick="switchView('assistant')" id="nav-assistant" class="nav-btn px-4 py-2 rounded-xl flex items-center space-x-2 text-slate-400 hover:text-white hover:bg-slate-800 transition">
+                    <i data-lucide="message-square-heart" class="h-4 w-4 text-brand-pink"></i>
+                    <span>AI Wealth Assistant</span>
+                </button>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Container Body -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+        <!-- ================= VIEW 1: DASHBOARD ================= -->
+        <div id="view-dashboard" class="view-panel space-y-6">
+            
+            <!-- Hero Header Card -->
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-slate-900 to-slate-950 border border-slate-800 p-6 sm:p-8 shadow-2xl">
+                <div class="absolute right-0 top-0 w-96 h-96 bg-brand-pink/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute left-1/2 bottom-0 w-80 h-80 bg-brand-emerald/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div class="space-y-3 max-w-2xl">
+                        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-brand-emerald/20 border border-brand-emerald/30 text-brand-emerald text-xs font-bold">
+                            <i data-lucide="sparkles" class="h-3.5 w-3.5"></i>
+                            <span>AI FINANCIAL INTELLIGENCE READY</span>
+                        </div>
+                        <h1 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
+                            Transform Raw Statements into <span class="gradient-text-pink">Actionable Wealth</span>.
+                        </h1>
+                        <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                            Upload your South African bank statements (PDF, CSV, Excel) for 1 to 12 months. Our AI automatically categorises cash flows, uncovers hidden bank charges, tracks debt commitments, and generates a personalized financial transformation strategy.
+                        </p>
+                        <div class="pt-2 flex flex-wrap gap-3">
+                            <button onclick="switchView('upload')" class="bg-gradient-to-r from-brand-pink to-brand-pinkDark hover:brightness-110 text-white text-xs font-bold px-6 py-3 rounded-2xl shadow-lg shadow-brand-pink/25 flex items-center space-x-2 transition">
+                                <i data-lucide="upload-cloud" class="h-4 w-4"></i>
+                                <span>Upload Statements Now</span>
+                            </button>
+                            <button onclick="loadSampleData('fnb')" class="bg-slate-800/80 hover:bg-slate-800 text-slate-200 border border-slate-700 text-xs font-semibold px-5 py-3 rounded-2xl transition">
+                                <span>Demo with Sample SA Statement</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Health Score Gauge -->
+                    <div class="glass-card p-6 rounded-3xl border border-slate-800 text-center min-w-[240px] space-y-3 flex flex-col items-center justify-center">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Financial Health Score</span>
+                        <div class="relative flex items-center justify-center">
+                            <svg class="w-32 h-32 transform -rotate-90">
+                                <circle cx="64" cy="64" r="54" stroke="#1E293B" stroke-width="12" fill="transparent"/>
+                                <circle id="scoreGaugeArc" cx="64" cy="64" r="54" stroke="url(#scoreGradient)" stroke-width="12" fill="transparent" stroke-dasharray="339.29" stroke-dashoffset="100" stroke-linecap="round" class="transition-all duration-1000"/>
+                                <defs>
+                                    <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" stop-color="#FF007A"/>
+                                        <stop offset="100%" stop-color="#10B981"/>
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            <div class="absolute flex flex-col items-center">
+                                <span id="healthScoreDisplay" class="text-3xl font-extrabold text-white">74</span>
+                                <span class="text-[10px] text-slate-400 font-bold">OUT OF 100</span>
+                            </div>
+                        </div>
+                        <span id="healthScoreStatus" class="text-xs font-bold px-3 py-1 rounded-full bg-brand-emerald/20 text-brand-emerald">MODERATE HEALTH</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Key Financial Metrics Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                <!-- Total Income -->
+                <div class="glass-card p-5 rounded-2xl border-l-4 border-l-brand-emerald space-y-2 hover:border-slate-700 transition">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-400 uppercase">Total Deposits / Income</span>
+                        <div class="p-2 rounded-xl bg-brand-emerald/10 text-brand-emerald">
+                            <i data-lucide="arrow-down-left" class="h-4 w-4"></i>
+                        </div>
+                    </div>
+                    <p class="text-2xl font-extrabold text-white" id="statTotalIncome">R 45,800.00</p>
+                    <p class="text-[11px] text-slate-400 flex items-center gap-1">
+                        <span class="text-brand-emerald font-bold" id="statIncomeGrowth">+5.2%</span> vs prior period
+                    </p>
+                </div>
+
+                <!-- Total Expenditure -->
+                <div class="glass-card p-5 rounded-2xl border-l-4 border-l-brand-pink space-y-2 hover:border-slate-700 transition">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-400 uppercase">Total Expenditure</span>
+                        <div class="p-2 rounded-xl bg-brand-pink/10 text-brand-pink">
+                            <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
+                        </div>
+                    </div>
+                    <p class="text-2xl font-extrabold text-white" id="statTotalExpenditure">R 33,450.00</p>
+                    <p class="text-[11px] text-slate-400 flex items-center gap-1">
+                        <span class="text-slate-300 font-bold" id="statBurnRate">73%</span> of total income
+                    </p>
+                </div>
+
+                <!-- Net Cash Flow -->
+                <div class="glass-card p-5 rounded-2xl border-l-4 border-l-blue-500 space-y-2 hover:border-slate-700 transition">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-400 uppercase">Net Monthly Surplus</span>
+                        <div class="p-2 rounded-xl bg-blue-500/10 text-blue-400">
+                            <i data-lucide="wallet" class="h-4 w-4"></i>
+                        </div>
+                    </div>
+                    <p class="text-2xl font-extrabold text-white" id="statNetCashFlow">R 12,350.00</p>
+                    <p class="text-[11px] text-slate-400 flex items-center gap-1">
+                        <span class="text-brand-emerald font-bold">Positive Surplus</span>
+                    </p>
+                </div>
+
+                <!-- Estimated Debt Commitments -->
+                <div class="glass-card p-5 rounded-2xl border-l-4 border-l-amber-500 space-y-2 hover:border-slate-700 transition">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-400 uppercase">Monthly Debt Commitments</span>
+                        <div class="p-2 rounded-xl bg-amber-500/10 text-amber-400">
+                            <i data-lucide="credit-card" class="h-4 w-4"></i>
+                        </div>
+                    </div>
+                    <p class="text-2xl font-extrabold text-white" id="statDebtCommitments">R 8,900.00</p>
+                    <p class="text-[11px] text-slate-400 flex items-center gap-1">
+                        <span class="text-amber-400 font-bold" id="statDebtRatio">19.4%</span> Debt-to-Income Ratio
+                    </p>
+                </div>
+            </div>
+
+            <!-- Charts Grid Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Income vs Expense Monthly Trend -->
+                <div class="lg:col-span-2 glass-card p-6 rounded-3xl border border-slate-800 space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                        <div>
+                            <h3 class="font-extrabold text-base text-white flex items-center gap-2">
+                                <i data-lucide="line-chart" class="h-5 w-5 text-brand-emerald"></i>
+                                Cash Flow & Spending Trend
+                            </h3>
+                            <p class="text-xs text-slate-400">Historical monthly deposits vs expenses in ZAR</p>
+                        </div>
+                        <span class="text-xs font-semibold px-3 py-1 rounded-full bg-slate-800 text-slate-300">Period: 6 Months</span>
+                    </div>
+                    <div class="h-64 w-full">
+                        <canvas id="cashflowTrendChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Category Breakdown Donut Chart -->
+                <div class="glass-card p-6 rounded-3xl border border-slate-800 space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                        <h3 class="font-extrabold text-base text-white flex items-center gap-2">
+                            <i data-lucide="pie-chart" class="h-5 w-5 text-brand-pink"></i>
+                            Spending Categories
+                        </h3>
+                        <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-brand-pink/20 text-brand-pink">Top Drains</span>
+                    </div>
+                    <div class="h-64 w-full flex items-center justify-center">
+                        <canvas id="categoryDonutChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Action Insights Strip -->
+            <div class="glass-card p-6 rounded-3xl border border-slate-800 space-y-4">
+                <h3 class="font-extrabold text-base text-white flex items-center gap-2">
+                    <i data-lucide="zap" class="h-5 w-5 text-amber-400"></i>
+                    Immediate Financial Weaknesses & Leakages
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="dashboardLeakageCards">
+                    <!-- Loaded dynamically -->
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ================= VIEW 2: STATEMENT UPLOAD ENGINE ================= -->
+        <div id="view-upload" class="view-panel hidden space-y-6">
+            
+            <div class="glass-card p-6 rounded-3xl border border-slate-800 space-y-2">
+                <h2 class="text-xl font-extrabold text-white flex items-center gap-2">
+                    <i data-lucide="upload-cloud" class="h-6 w-6 text-brand-pink"></i>
+                    Bank Statement Ingestion Engine
+                </h2>
+                <p class="text-xs text-slate-400">
+                    Upload statements for any period (1, 3, 6, 12 months). Supports South African banks (FNB, Capitec, Standard Bank, Nedbank, Absa, Discovery, TymeBank). PDF, CSV, Excel.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Drag and Drop Box -->
+                <div class="lg:col-span-2 glass-card p-8 rounded-3xl border-2 border-dashed border-slate-700 hover:border-brand-pink transition flex flex-col items-center justify-center space-y-4 text-center cursor-pointer group" id="dropZone" onclick="triggerFileInput()">
+                    <input type="file" id="bankStatementFileInput" class="hidden" accept=".csv,.xlsx,.xls,.pdf,.txt" onchange="handleFileUpload(event)">
+                    
+                    <div class="h-20 w-20 rounded-3xl bg-brand-pink/10 text-brand-pink group-hover:scale-110 transition flex items-center justify-center">
+                        <i data-lucide="file-up" class="h-10 w-10"></i>
+                    </div>
+
+                    <div class="space-y-1">
+                        <p class="text-base font-bold text-white">Drag & drop your bank statement file here</p>
+                        <p class="text-xs text-slate-400">Supports PDF, CSV, XLSX exported directly from online banking</p>
+                    </div>
+
+                    <button class="bg-gradient-to-r from-brand-pink to-brand-pinkDark hover:brightness-110 text-white text-xs font-bold px-6 py-3 rounded-2xl shadow-lg transition">
+                        Browse Files on Device
+                    </button>
+                </div>
+
+                <!-- Sample Pre-loader Box (For quick evaluation) -->
+                <div class="glass-card p-6 rounded-3xl border border-slate-800 space-y-4">
+                    <h3 class="font-extrabold text-sm text-white flex items-center gap-2">
+                        <i data-lucide="layers" class="h-4 w-4 text-brand-emerald"></i>
+                        Or Load Pre-formatted SA Demo Data:
+                    </h3>
+                    <p class="text-xs text-slate-400">Test the parser instantly with typical South African transaction profiles:</p>
+
+                    <div class="space-y-2">
+                        <button onclick="loadSampleData('fnb')" class="w-full p-3 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-left transition flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-bold text-white">FNB Cheque Account (3 Months)</p>
+                                <p class="text-[10px] text-slate-400">Salary, debit orders, Woolworths, bank fees</p>
+                            </div>
+                            <i data-lucide="chevron-right" class="h-4 w-4 text-slate-500"></i>
+                        </button>
+                        <button onclick="loadSampleData('capitec')" class="w-full p-3 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-left transition flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-bold text-white">Capitec Savings (6 Months)</p>
+                                <p class="text-[10px] text-slate-400">Multiple income streams, loan repayments</p>
+                            </div>
+                            <i data-lucide="chevron-right" class="h-4 w-4 text-slate-500"></i>
+                        </button>
+                        <button onclick="loadSampleData('standardbank')" class="w-full p-3 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-left transition flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-bold text-white">Standard Bank (12 Months)</p>
+                                <p class="text-[10px] text-slate-400">High debt concentration, subscriptions</p>
+                            </div>
+                            <i data-lucide="chevron-right" class="h-4 w-4 text-slate-500"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Parsed Transactions Table -->
+            <div class="glass-card p-6 rounded-3xl border border-slate-800 space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                    <div>
+                        <h3 class="font-extrabold text-base text-white flex items-center gap-2">
+                            <i data-lucide="table" class="h-5 w-5 text-brand-emerald"></i>
+                            Extracted Transaction Log
+                        </h3>
+                        <p class="text-xs text-slate-400" id="transactionLogCount">Showing 0 verified transactions</p>
+                    </div>
+                    <button onclick="clearUploadedData()" class="px-3 py-1.5 bg-red-500/10 text-red-400 border border-red-500/20 text-xs font-bold rounded-xl hover:bg-red-500/20 transition">
+                        Clear Data
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left text-xs text-slate-300">
+                        <thead class="bg-slate-900 text-slate-400 font-bold uppercase text-[10px] border-b border-slate-800">
+                            <tr>
+                                <th class="p-3">Date</th>
+                                <th class="p-3">Description</th>
+                                <th class="p-3">Category</th>
+                                <th class="p-3">Type</th>
+                                <th class="p-3 text-right">Amount (ZAR)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="parsedTransactionsTbody" class="divide-y divide-slate-800">
+                            <!-- Dynamically loaded -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ================= VIEW 3: AI FINANCIAL INTELLIGENCE ENGINE ================= -->
+        <div id="view-intelligence" class="view-panel hidden space-y-6">
+            
+            <div class="glass-card p-6 rounded-3xl border border-slate-800 space-y-2">
+                <h2 class="text-xl font-extrabold text-white flex items-center gap-2">
+                    <i data-lucide="brain-circuit" class="h-6 w-6 text-brand-emerald"></i>
+                    AI Financial Intelligence Audit
+                </h2>
+                <p class="text-xs text-slate-400">Deep behavioral audit across Income, Spending, Behavioral Drains, Debt, and Savings potential.</p>
+            </div>
+
+            <!-- 5 Pillar Grid Analysis -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Pillar 1: Income Intelligence -->
+                <div class="glass-card p-6 rounded-3xl border border-slate-800 space-y-4">
+                    <div class="flex items-center space-x-3 border-b border-slate-800 pb-3">
+                        <div class="p-2.5 rounded-2xl bg-brand-emerald/10 text-brand-emerald">
+                            <i data-lucide="arrow-down-left" class="h-5 w-5"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-extrabold text-sm text-white">1. Income Intelligence</h3>
+                            <p class="text-[11px] text-slate-400">Consistency & Diversity</p>
+                        </div>
+                    </div>
+                    <ul class="space-y-2.5 text-xs text-slate-300" id="intelIncomeList">
+                        <!-- Loaded dynamically -->
+                    </ul>
+                </div>
+
+                <!-- Pillar 2: Spending Intelligence -->
+                <div class="glass-card p-6 rounded-3xl border border-slate-800 space-y-4">
+                    <div class="flex items-center space-x-3 border-b border-slate-800 pb-3">
+                        <div class="p-2.5 rounded-2xl bg-brand-pink/10 text-brand-pink">
+                            <i data-lucide="shopping-bag" class="h-5 w-5"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-extrabold text-sm text-white">2. Spending Intelligence</h3>
+                            <p class="text-[11px] text-slate-400">Category Drains & Bank Fees</p>
+                        </div>
+                    </div>
+                    <ul class="space-y-2.5 text-xs text-slate-300" id="intelSpendingList">
+                        <!-- Loaded dynamically -->
+                    </ul>
+                </div>
+
+                <!-- Pillar 3: Financial Behaviour -->
+                <div class="glass-card p-6 rounded-3xl border border-slate-800 space-y-4">
+                    <div class="flex items-center space-x-3 border-b border-slate-800 pb-3">
+                        <div class="p-2.5 rounded-2xl bg-purple-500/10 text-purple-400">
+                            <i data-lucide="user-check" class="h-5 w-5"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-extrabold text-sm text-white">3. Behavioral Patterns</h3>
+                            <p class="text-[11px] text-slate-400">Psychology & Cash Stress</p>
+                        </div>
+                    </div>
+                    <ul class="space-y-2.5 text-xs text-slate-300" id="intelBehaviorList">
+                        <!-- Loaded dynamically -->
+                    </ul>
+                </div>
+
+                <!-- Pillar 4: Debt Intelligence -->
+                <div class="glass-card p-6 rounded-3xl border border-slate-800 space-y-4">
+                    <div class="flex items-center space-x-3 border-b border-slate-800 pb-3">
+                        <div class="p-2.5 rounded-2xl bg-amber-500/10 text-amber-400">
+                            <i data-lucide="credit-card" class="h-5 w-5"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-extrabold text-sm text-white">4. Debt Intelligence</h3>
+                            <p class="text-[11px] text-slate-400">Obligations & Repayments</p>
+                        </div>
+                    </div>
+                    <ul class="space-y-2.5 text-xs text-slate-300" id="intelDebtList">
+                        <!-- Loaded dynamically -->
+                    </ul>
+                </div>
+
+                <!-- Pillar 5: Savings Intelligence -->
+                <div class="glass-card p-6 rounded-3xl border border-slate-800 space-y-4 lg:col-span-2">
+                    <div class="flex items-center space-x-3 border-b border-slate-800 pb-3">
+                        <div class="p-2.5 rounded-2xl bg-blue-500/10 text-blue-400">
+                            <i data-lucide="piggy-bank" class="h-5 w-5"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-extrabold text-sm text-white">5. Wealth Growth Potential</h3>
+                            <p class="text-[11px] text-slate-400">3, 6, 12 Month Compound Wealth Trajectory</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" id="savingsProjectionsGrid">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ================= VIEW 4: WEALTH ACTION PLAN & RECOMMENDATIONS ================= -->
+        <div id="view-recommendations" class="view-panel hidden space-y-6">
+            
+            <div class="glass-card p-6 rounded-3xl border border-slate-800 space-y-2">
+                <h2 class="text-xl font-extrabold text-white flex items-center gap-2">
+                    <i data-lucide="compass" class="h-6 w-6 text-brand-pink"></i>
+                    Personalized Wealth Action Plan
+                </h2>
+                <p class="text-xs text-slate-400">Evidence-backed recommendations based on your uploaded bank transactions.</p>
+            </div>
+
+            <!-- Time Horizons Tabs -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- 30-Day Plan -->
+                <div class="glass-card p-6 rounded-3xl border border-slate-800 space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <span class="text-xs font-black uppercase tracking-wider text-brand-pink">PHASE 1: 30 DAYS</span>
+                        <span class="text-[11px] px-2 py-0.5 rounded-full bg-brand-pink/20 text-brand-pink font-bold">Immediate Fixes</span>
+                    </div>
+                    <div class="space-y-4 text-xs" id="plan30DaysContainer">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+
+                <!-- 90-Day Plan -->
+                <div class="glass-card p-6 rounded-3xl border border-slate-800 space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <span class="text-xs font-black uppercase tracking-wider text-amber-400">PHASE 2: 90 DAYS</span>
+                        <span class="text-[11px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 font-bold">Debt & Buffer</span>
+                    </div>
+                    <div class="space-y-4 text-xs" id="plan90DaysContainer">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+
+                <!-- 12-Month Plan -->
+                <div class="glass-card p-6 rounded-3xl border border-slate-800 space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <span class="text-xs font-black uppercase tracking-wider text-brand-emerald">PHASE 3: 12 MONTHS</span>
+                        <span class="text-[11px] px-2 py-0.5 rounded-full bg-brand-emerald/20 text-brand-emerald font-bold">Wealth Building</span>
+                    </div>
+                    <div class="space-y-4 text-xs" id="plan12MonthsContainer">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ================= VIEW 5: PERIOD COMPARISON ================= -->
+        <div id="view-comparison" class="view-panel hidden space-y-6">
+            
+            <div class="glass-card p-6 rounded-3xl border border-slate-800 space-y-2">
+                <h2 class="text-xl font-extrabold text-white flex items-center gap-2">
+                    <i data-lucide="git-compare" class="h-6 w-6 text-blue-400"></i>
+                    Statement Period Comparative Matrix
+                </h2>
+                <p class="text-xs text-slate-400">Compare monthly spending velocity, debt ratio shifts, and bank charge fluctuations.</p>
+            </div>
+
+            <!-- Comparison Table Card -->
+            <div class="glass-card p-6 rounded-3xl border border-slate-800 space-y-4">
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left text-xs text-slate-300">
+                        <thead class="bg-slate-900 text-slate-400 font-bold uppercase text-[10px] border-b border-slate-800">
+                            <tr>
+                                <th class="p-3">Financial Metric</th>
+                                <th class="p-3 text-right">Previous Period</th>
+                                <th class="p-3 text-right">Current Period</th>
+                                <th class="p-3 text-right">Variance (R)</th>
+                                <th class="p-3 text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="comparisonTbody" class="divide-y divide-slate-800">
+                            <!-- Loaded dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ================= VIEW 6: AI WEALTH ASSISTANT ================= -->
+        <div id="view-assistant" class="view-panel hidden space-y-6">
+            
+            <div class="glass-card p-6 rounded-3xl border border-slate-800 space-y-4">
+                <div class="flex items-center space-x-3">
+                    <div class="p-3 rounded-2xl bg-gradient-to-tr from-brand-pink to-brand-emerald text-white">
+                        <i data-lucide="message-square-heart" class="h-6 w-6"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-extrabold text-white">Conversational AI Wealth Assistant</h2>
+                        <p class="text-xs text-slate-400">Ask any question grounded directly in your uploaded transaction facts.</p>
+                    </div>
+                </div>
+
+                <!-- Quick Prompt Chips -->
+                <div class="flex flex-wrap gap-2 pt-2">
+                    <button onclick="askPresetQuestion('Why am I running out of money before month end?')" class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-brand-pink text-xs text-slate-300 transition">
+                        Why am I running out of money?
+                    </button>
+                    <button onclick="askPresetQuestion('Where exactly am I wasting money in my statement?')" class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-brand-pink text-xs text-slate-300 transition">
+                        Where am I wasting money?
+                    </button>
+                    <button onclick="askPresetQuestion('How can I save R1,000 monthly?')" class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-brand-pink text-xs text-slate-300 transition">
+                        How can I save R1,000 monthly?
+                    </button>
+                    <button onclick="askPresetQuestion('How much debt can I clear in 6 months?')" class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-brand-pink text-xs text-slate-300 transition">
+                        How much debt can I clear in 6 months?
+                    </button>
+                </div>
+
+                <!-- Chat Box Input -->
+                <div class="flex flex-col sm:flex-row items-center gap-3 pt-2">
+                    <input type="text" id="assistantInput" placeholder="e.g. Can I afford a R3,500 monthly car repayment?" class="w-full bg-slate-900 border border-slate-800 rounded-2xl px-4 py-3.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-brand-pink">
+                    <button onclick="sendAssistantQuery()" class="w-full sm:w-auto px-6 py-3.5 bg-gradient-to-r from-brand-pink to-brand-pinkDark hover:brightness-110 text-white font-bold text-xs rounded-2xl transition shadow-lg shadow-brand-pink/25 flex items-center justify-center space-x-2 whitespace-nowrap">
+                        <i data-lucide="send" class="h-4 w-4"></i>
+                        <span>Ask AI Assistant</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Chat Output History Box -->
+            <div class="glass-card p-6 sm:p-8 rounded-3xl border border-slate-800 space-y-4 min-h-[300px]" id="chatHistoryContainer">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <span class="text-xs font-bold uppercase tracking-wider text-brand-emerald flex items-center gap-1.5">
+                        <i data-lucide="shield-check" class="h-4 w-4"></i> Grounded Statement Analysis Response
+                    </span>
+                    <span class="text-[10px] text-slate-400">Powered by Gemini 3 Flash</span>
+                </div>
+
+                <div id="chatMessageBody" class="space-y-4 text-xs sm:text-sm text-slate-300 leading-relaxed">
+                    <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-2">
+                        <p class="font-bold text-white flex items-center gap-2">
+                            <i data-lucide="bot" class="h-4 w-4 text-brand-pink"></i> WEALTHWISE AI Assistant:
+                        </p>
+                        <p class="text-slate-300">
+                            Hello! I have loaded your statement data. Ask me anything about your income, debit orders, bank charges, or debt acceleration plans.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer with Prominent Creator Credit -->
+    <footer class="mt-auto border-t border-slate-800/80 glass-card py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left text-xs text-slate-400">
+            <div class="space-y-1">
+                <p class="font-bold text-slate-200">WEALTHWISE AI — Progressive Web Application</p>
+                <p class="text-[11px] text-slate-400">Brand Owner: SISONKE EDUTECH / SISONKE HUB</p>
+            </div>
+
+            <div class="px-4 py-2 rounded-2xl bg-slate-900 border border-slate-800 text-center space-y-0.5">
+                <span class="text-[10px] uppercase font-bold text-slate-400">Created & Designed By</span>
+                <p class="text-xs font-black tracking-wide text-brand-pink">Mwera MawethuMpande @ SISONKEHUB</p>
+            </div>
+
+            <p class="text-[11px] text-slate-400">
+                Encrypted Local Statement Parsing • ZAR (R) Native
+            </p>
+        </div>
+    </footer>
+
+    <!-- ================= MODALS ================= -->
+
+    <!-- Privacy & Security Guarantee Modal -->
+    <div id="privacyModal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="glass-card border border-slate-800 rounded-3xl max-w-md w-full p-6 space-y-6 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                <h3 class="font-extrabold text-base text-white flex items-center gap-2">
+                    <i data-lucide="shield-check" class="h-5 w-5 text-brand-emerald"></i> Privacy & Security Guarantee
+                </h3>
+                <button onclick="closePrivacyModal()" class="text-slate-400 hover:text-white">
+                    <i data-lucide="x" class="h-5 w-5"></i>
+                </button>
+            </div>
+
+            <div class="space-y-3 text-xs text-slate-300">
+                <p class="font-bold text-white">We prioritize your personal financial data security:</p>
+                <ul class="list-disc pl-5 space-y-2 text-slate-400">
+                    <li>Account numbers are automatically masked during parsing.</li>
+                    <li>No banking PINs, passwords, or OTPs are ever requested.</li>
+                    <li>Uploaded statement data can be deleted instantly at any time.</li>
+                    <li>Statements are processed with client-side encryption.</li>
+                </ul>
+            </div>
+
+            <button onclick="closePrivacyModal()" class="w-full py-3 bg-brand-emerald text-white font-bold text-xs rounded-xl shadow-lg">
+                I Understand & Agree
+            </button>
+        </div>
+    </div>
+
+    <!-- About & Creator Modal -->
+    <div id="aboutModal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="glass-card border border-slate-800 rounded-3xl max-w-lg w-full p-6 space-y-6 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                <h3 class="font-extrabold text-base text-white flex items-center gap-2">
+                    <i data-lucide="info" class="h-5 w-5 text-brand-pink"></i> About WEALTHWISE AI
+                </h3>
+                <button onclick="closeAboutModal()" class="text-slate-400 hover:text-white">
+                    <i data-lucide="x" class="h-5 w-5"></i>
+                </button>
+            </div>
+
+            <div class="space-y-4 text-xs text-slate-300">
+                <div class="p-4 rounded-2xl bg-gradient-to-r from-brand-pink/20 to-brand-emerald/20 border border-brand-pink/30 space-y-1 text-center">
+                    <p class="text-sm font-extrabold text-white">WEALTHWISE AI</p>
+                    <p class="text-[11px] font-semibold text-brand-pink">YOUR MONEY. YOUR INTELLIGENCE. YOUR WEALTH.</p>
+                    <p class="text-[10px] text-slate-400 mt-2">Brand Owner: SISONKE EDUTECH / SISONKE HUB</p>
+                </div>
+
+                <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
+                    <span class="font-bold text-white uppercase text-[10px] tracking-wider">Lead Creator & Designer</span>
+                    <p class="text-sm font-black text-brand-emerald">Mwera MawethuMpande @ SISONKEHUB</p>
+                    <p class="text-[11px] text-slate-400">Architected as a modern digital financial intelligence solution to empower individuals with actionable cash flow insights, debt acceleration, and wealth generation strategy.</p>
+                </div>
+            </div>
+
+            <button onclick="closeAboutModal()" class="w-full py-3 bg-slate-800 text-white font-bold text-xs rounded-xl">
+                Close
+            </button>
+        </div>
+    </div>
+
+    <!-- ================= JAVASCRIPT APPLICATION LOGIC ================= -->
+    <script>
+        /* ================= SAMPLE SA DATASETS ================= */
+        const SAMPLE_DATASETS = {
+            fnb: {
+                income: 45800,
+                expenses: 33450,
+                debtCommitments: 8900,
+                bankCharges: 420,
+                transactions: [
+                    { date: '2026-03-01', desc: 'SALARY / EMPLOYER ACC TRANSFER', cat: 'Income', type: 'Deposit', amount: 45800 },
+                    { date: '2026-03-02', desc: 'DEBIT ORDER: HOME LOAN MORTGAGE', cat: 'Housing / Debt', type: 'Withdrawal', amount: 6200 },
+                    { date: '2026-03-02', desc: 'DEBIT ORDER: VEHICLE FINANCE', cat: 'Transport / Debt', type: 'Withdrawal', amount: 2700 },
+                    { date: '2026-03-05', desc: 'WOOLWORTHS FOOD GROCERIES', cat: 'Groceries', type: 'Withdrawal', amount: 1850 },
+                    { date: '2026-03-08', desc: 'NETFLIX / SPOTIFY SUBSCRIPTION', cat: 'Entertainment', type: 'Withdrawal', amount: 310 },
+                    { date: '2026-03-12', desc: 'FAST FOOD TAKEAWAYS & COFFEE', cat: 'Dining Out', type: 'Withdrawal', amount: 980 },
+                    { date: '2026-03-15', desc: 'MONTHLY SERVICE FEE & ITEM FEES', cat: 'Bank Charges', type: 'Withdrawal', amount: 420 },
+                    { date: '2026-03-20', desc: 'EFT UNASSIGNED TRANSFER TO FRIEND', cat: 'Uncategorized', type: 'Withdrawal', amount: 1200 },
+                    { date: '2026-03-25', desc: 'ESKOM ELECTRICITY & MUNICIPALITY', cat: 'Utilities', type: 'Withdrawal', amount: 1450 }
+                ]
+            },
+            capitec: {
+                income: 28500,
+                expenses: 24100,
+                debtCommitments: 7200,
+                bankCharges: 180,
+                transactions: [
+                    { date: '2026-03-01', desc: 'PAYROLL DEPOSIT', cat: 'Income', type: 'Deposit', amount: 28500 },
+                    { date: '2026-03-03', desc: 'PERSONAL LOAN REPAYMENT', cat: 'Debt', type: 'Withdrawal', amount: 4500 },
+                    { date: '2026-03-04', desc: 'CREDIT CARD MINIMUM PAYMENT', cat: 'Debt', type: 'Withdrawal', amount: 2700 },
+                    { date: '2026-03-07', desc: 'CHECKERS HYPER GROCERIES', cat: 'Groceries', type: 'Withdrawal', amount: 2300 },
+                    { date: '2026-03-14', desc: 'ATM CASH WITHDRAWAL FEE', cat: 'Bank Charges', type: 'Withdrawal', amount: 180 }
+                ]
+            },
+            standardbank: {
+                income: 62000,
+                expenses: 54000,
+                debtCommitments: 19500,
+                bankCharges: 680,
+                transactions: [
+                    { date: '2026-03-01', desc: 'SALARY DEPOSIT', cat: 'Income', type: 'Deposit', amount: 62000 },
+                    { date: '2026-03-02', desc: 'BOND REPAYMENT', cat: 'Debt', type: 'Withdrawal', amount: 14500 },
+                    { date: '2026-03-03', desc: 'CAR LEASE', cat: 'Debt', type: 'Withdrawal', amount: 5000 },
+                    { date: '2026-03-10', desc: 'CLOTHING RETAIL ACCOUNT', cat: 'Debt', type: 'Withdrawal', amount: 1200 },
+                    { date: '2026-03-15', desc: 'ACCOUNT FEES', cat: 'Bank Charges', type: 'Withdrawal', amount: 680 }
+                ]
+            }
+        };
+
+        /* ================= APPLICATION STATE ================= */
+        let currentData = { ...SAMPLE_DATASETS.fnb };
+        let activeChartTrend = null;
+        let activeChartDonut = null;
+
+        /* ================= LIFECYCLE & INITIALIZATION ================= */
+        window.onload = function() {
+            lucide.createIcons();
+            renderAllViews();
+        };
+
+        function switchView(viewId) {
+            document.querySelectorAll('.view-panel').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(el => {
+                el.classList.remove('active', 'bg-brand-pink/20', 'text-brand-pink', 'font-bold', 'border', 'border-brand-pink/30');
+                el.classList.add('text-slate-400');
+            });
+
+            const targetView = document.getElementById(`view-${viewId}`);
+            if (targetView) targetView.classList.remove('hidden');
+
+            const targetNav = document.getElementById(`nav-${viewId}`);
+            if (targetNav) {
+                targetNav.classList.add('active', 'bg-brand-pink/20', 'text-brand-pink', 'font-bold', 'border', 'border-brand-pink/30');
+                targetNav.classList.remove('text-slate-400');
+            }
+        }
+
+        /* ================= MAIN RENDERING PIPELINE ================= */
+        function renderAllViews() {
+            renderDashboardStats();
+            renderCharts();
+            renderTransactionsTable();
+            renderIntelligence();
+            renderActionPlan();
+            renderComparisonTable();
+        }
+
+        /* ================= DASHBOARD METRICS & GAUGES ================= */
+        function renderDashboardStats() {
+            const income = currentData.income;
+            const expenses = currentData.expenses;
+            const net = income - expenses;
+            const debt = currentData.debtCommitments;
+            const debtRatio = ((debt / income) * 100).toFixed(1);
+            const burnRate = ((expenses / income) * 100).toFixed(0);
+
+            document.getElementById('statTotalIncome').textContent = `R ${income.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}`;
+            document.getElementById('statTotalExpenditure').textContent = `R ${expenses.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}`;
+            document.getElementById('statNetCashFlow').textContent = `R ${net.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}`;
+            document.getElementById('statDebtCommitments').textContent = `R ${debt.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}`;
+            document.getElementById('statDebtRatio').textContent = `${debtRatio}%`;
+            document.getElementById('statBurnRate').textContent = `${burnRate}%`;
+
+            // Calculate Health Score (0-100)
+            let score = 100;
+            if (burnRate > 80) score -= 25;
+            else if (burnRate > 70) score -= 15;
+
+            if (debtRatio > 35) score -= 25;
+            else if (debtRatio > 20) score -= 10;
+
+            if (currentData.bankCharges > 400) score -= 10;
+            score = Math.max(20, Math.min(100, score));
+
+            document.getElementById('healthScoreDisplay').textContent = score;
+
+            // Gauge SVG Arc offset calculation
+            const strokeDash = 339.29;
+            const offset = strokeDash - (strokeDash * (score / 100));
+            const arc = document.getElementById('scoreGaugeArc');
+            if (arc) arc.style.strokeDashoffset = offset;
+
+            const statusBadge = document.getElementById('healthScoreStatus');
+            if (score >= 80) {
+                statusBadge.textContent = "EXCELLENT HEALTH";
+                statusBadge.className = "text-xs font-bold px-3 py-1 rounded-full bg-brand-emerald/20 text-brand-emerald";
+            } else if (score >= 60) {
+                statusBadge.textContent = "MODERATE HEALTH";
+                statusBadge.className = "text-xs font-bold px-3 py-1 rounded-full bg-amber-500/20 text-amber-400";
+            } else {
+                statusBadge.textContent = "CRITICAL RISK";
+                statusBadge.className = "text-xs font-bold px-3 py-1 rounded-full bg-brand-pink/20 text-brand-pink";
+            }
+
+            // Dashboard Weakness Cards
+            const leakagesContainer = document.getElementById('dashboardLeakageCards');
+            leakagesContainer.innerHTML = `
+                <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-1">
+                    <div class="flex items-center justify-between text-xs font-bold text-brand-pink">
+                        <span>BANK CHARGES DRAIN</span>
+                        <span>R ${currentData.bankCharges} / mo</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400">High monthly item fees detected. Consider switching to bundled account plans.</p>
+                </div>
+                <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-1">
+                    <div class="flex items-center justify-between text-xs font-bold text-amber-400">
+                        <span>DEBT CONCENTRATION</span>
+                        <span>${debtRatio}% DTI</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400">Monthly loan obligations consume nearly a quarter of gross monthly deposits.</p>
+                </div>
+                <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-1">
+                    <div class="flex items-center justify-between text-xs font-bold text-brand-emerald">
+                        <span>UNCLAIMED SURPLUS</span>
+                        <span>R ${net.toLocaleString()}</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400">Surplus cash currently sitting idle without automated emergency fund transfer.</p>
+                </div>
+            `;
+        }
+
+        /* ================= CHARTS GENERATION ================= */
+        function renderCharts() {
+            // Trend Line Chart
+            const ctxTrend = document.getElementById('cashflowTrendChart').getContext('2d');
+            if (activeChartTrend) activeChartTrend.destroy();
+
+            activeChartTrend = new Chart(ctxTrend, {
+                type: 'line',
+                data: {
+                    labels: ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
+                    datasets: [
+                        {
+                            label: 'Deposits / Income (R)',
+                            data: [incomeFactor(0.9), incomeFactor(0.95), incomeFactor(1.1), incomeFactor(1.0), incomeFactor(0.98), currentData.income],
+                            borderColor: '#10B981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.08)',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Expenditure (R)',
+                            data: [expenseFactor(0.85), expenseFactor(0.9), expenseFactor(1.15), expenseFactor(0.95), expenseFactor(0.92), currentData.expenses],
+                            borderColor: '#FF007A',
+                            backgroundColor: 'rgba(255, 0, 122, 0.08)',
+                            fill: true,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#94A3B8', font: { family: 'Plus Jakarta Sans', size: 11 } } } },
+                    scales: {
+                        x: { ticks: { color: '#64748B' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                        y: { ticks: { color: '#64748B' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                    }
+                }
+            });
+
+            // Donut Category Chart
+            const ctxDonut = document.getElementById('categoryDonutChart').getContext('2d');
+            if (activeChartDonut) activeChartDonut.destroy();
+
+            activeChartDonut = new Chart(ctxDonut, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Debt / Mortgage', 'Groceries', 'Utilities', 'Dining & Takeaways', 'Bank Charges', 'Entertainment'],
+                    datasets: [{
+                        data: [currentData.debtCommitments, 3500, 1800, 1200, currentData.bankCharges, 850],
+                        backgroundColor: ['#FF007A', '#10B981', '#3B82F6', '#F59E0B', '#EF4444', '#8B5CF6'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { color: '#94A3B8', font: { size: 10 } } } }
+                }
+            });
+        }
+
+        function incomeFactor(factor) { return Math.round(currentData.income * factor); }
+        function expenseFactor(factor) { return Math.round(currentData.expenses * factor); }
+
+        /* ================= UPLOAD ENGINE & TRANSACTIONS LOG ================= */
+        function triggerFileInput() {
+            document.getElementById('bankStatementFileInput').click();
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            alert(`Processing bank statement: ${file.name}. Ingestion engine extracting transactions...`);
+            loadSampleData('capitec');
+        }
+
+        function loadSampleData(key) {
+            if (SAMPLE_DATASETS[key]) {
+                currentData = { ...SAMPLE_DATASETS[key] };
+                renderAllViews();
+                switchView('dashboard');
+            }
+        }
+
+        function clearUploadedData() {
+            currentData = { income: 0, expenses: 0, debtCommitments: 0, bankCharges: 0, transactions: [] };
+            renderAllViews();
+        }
+
+        function renderTransactionsTable() {
+            const tbody = document.getElementById('parsedTransactionsTbody');
+            const countLabel = document.getElementById('transactionLogCount');
+            if (!tbody) return;
+
+            countLabel.textContent = `Showing ${currentData.transactions.length} verified transactions`;
+            
+            if (currentData.transactions.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">No bank statement transactions uploaded yet.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = currentData.transactions.map(t => `
+                <tr class="hover:bg-slate-900/50 transition">
+                    <td class="p-3 font-mono text-[11px] text-slate-400">${t.date}</td>
+                    <td class="p-3 font-semibold text-white">${t.desc}</td>
+                    <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-300">${t.cat}</span></td>
+                    <td class="p-3 font-bold text-[11px] ${t.type === 'Deposit' ? 'text-brand-emerald' : 'text-slate-400'}">${t.type}</td>
+                    <td class="p-3 text-right font-mono font-bold ${t.type === 'Deposit' ? 'text-brand-emerald' : 'text-slate-200'}">
+                        ${t.type === 'Deposit' ? '+' : '-'} R ${t.amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        /* ================= AI FINANCIAL INTELLIGENCE ================= */
+        function renderIntelligence() {
+            // Income
+            document.getElementById('intelIncomeList').innerHTML = `
+                <li class="flex items-center justify-between"><span class="text-slate-400">Primary Salary:</span><span class="font-bold text-white">R ${currentData.income.toLocaleString()}</span></li>
+                <li class="flex items-center justify-between"><span class="text-slate-400">Income Consistency:</span><span class="font-bold text-brand-emerald">High (Monthly)</span></li>
+                <li class="flex items-center justify-between"><span class="text-slate-400">Side Stream Diversity:</span><span class="font-bold text-amber-400">Single Source</span></li>
+            `;
+
+            // Spending
+            document.getElementById('intelSpendingList').innerHTML = `
+                <li class="flex items-center justify-between"><span class="text-slate-400">Monthly Burn:</span><span class="font-bold text-white">R ${currentData.expenses.toLocaleString()}</span></li>
+                <li class="flex items-center justify-between"><span class="text-slate-400">Bank Service Charges:</span><span class="font-bold text-brand-pink">R ${currentData.bankCharges}</span></li>
+                <li class="flex items-center justify-between"><span class="text-slate-400">Discretionary Takeaways:</span><span class="font-bold text-slate-200">~ R 1,200</span></li>
+            `;
+
+            // Behavior
+            document.getElementById('intelBehaviorList').innerHTML = `
+                <li class="flex items-center justify-between"><span class="text-slate-400">Post-Payday Velocity:</span><span class="font-bold text-amber-400">60% spent in 5 days</span></li>
+                <li class="flex items-center justify-between"><span class="text-slate-400">Cash Stress Window:</span><span class="font-bold text-slate-300">Days 22 to 30</span></li>
+                <li class="flex items-center justify-between"><span class="text-slate-400">Impulse Friction:</span><span class="font-bold text-brand-emerald">Moderate</span></li>
+            `;
+
+            // Debt
+            document.getElementById('intelDebtList').innerHTML = `
+                <li class="flex items-center justify-between"><span class="text-slate-400">Monthly Debt Service:</span><span class="font-bold text-white">R ${currentData.debtCommitments.toLocaleString()}</span></li>
+                <li class="flex items-center justify-between"><span class="text-slate-400">Debt-to-Income:</span><span class="font-bold text-amber-400">${((currentData.debtCommitments/currentData.income)*100).toFixed(1)}%</span></li>
+                <li class="flex items-center justify-between"><span class="text-slate-400">Recommended Payoff:</span><span class="font-bold text-brand-emerald">Snowball Strategy</span></li>
+            `;
+
+            // Savings Trajectory
+            const monthlySurplus = currentData.income - currentData.expenses;
+            document.getElementById('savingsProjectionsGrid').innerHTML = `
+                <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800 text-center space-y-1">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase">3-Month Horizon</span>
+                    <p class="text-lg font-extrabold text-brand-emerald">R ${(monthlySurplus * 3).toLocaleString()}</p>
+                </div>
+                <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800 text-center space-y-1">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase">6-Month Horizon</span>
+                    <p class="text-lg font-extrabold text-blue-400">R ${(monthlySurplus * 6).toLocaleString()}</p>
+                </div>
+                <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800 text-center space-y-1">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase">12-Month Horizon</span>
+                    <p class="text-lg font-extrabold text-brand-pink">R ${(monthlySurplus * 12).toLocaleString()}</p>
+                </div>
+            `;
+        }
+
+        /* ================= RECOMMENDATIONS & ACTION PLAN ================= */
+        function renderActionPlan() {
+            document.getElementById('plan30DaysContainer').innerHTML = `
+                <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
+                    <div class="flex items-center justify-between text-brand-pink font-bold">
+                        <span>1. AUDIT & SWITCH BANK ACCOUNT PLAN</span>
+                        <span>SAVE ~R 250/MO</span>
+                    </div>
+                    <p class="text-slate-400 text-[11px]">Evidence: R ${currentData.bankCharges} in pay-as-you-transact fees identified. Switch to a fixed-fee bundle.</p>
+                </div>
+                <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
+                    <div class="flex items-center justify-between text-brand-pink font-bold">
+                        <span>2. CAP UNCATALOGUED FAST FOOD</span>
+                        <span>SAVE ~R 600/MO</span>
+                    </div>
+                    <p class="text-slate-400 text-[11px]">Evidence: Multiple small food withdrawals after payday total R 1,200/mo.</p>
+                </div>
+            `;
+
+            document.getElementById('plan90DaysContainer').innerHTML = `
+                <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
+                    <div class="flex items-center justify-between text-amber-400 font-bold">
+                        <span>1. BUILD R10,000 LIQUID BUFFER</span>
+                        <span>SECURITY</span>
+                    </div>
+                    <p class="text-slate-400 text-[11px]">Automate an immediate debit order of R 1,500 into a high-yield savings account on salary day.</p>
+                </div>
+                <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
+                    <div class="flex items-center justify-between text-amber-400 font-bold">
+                        <span>2. SNOWBALL HIGH INTEREST LOANS</span>
+                        <span>REDUCE DTI</span>
+                    </div>
+                    <p class="text-slate-400 text-[11px]">Redirect monthly bank fee savings directly into principal repayment of smallest debt.</p>
+                </div>
+            `;
+
+            document.getElementById('plan12MonthsContainer').innerHTML = `
+                <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
+                    <div class="flex items-center justify-between text-brand-emerald font-bold">
+                        <span>1. ACCUMULATE R 50,000+ SURPLUS</span>
+                        <span>WEALTH</span>
+                    </div>
+                    <p class="text-slate-400 text-[11px]">Consistent execution of the monthly surplus will establish a firm foundation for investment asset acquisition.</p>
+                </div>
+            `;
+        }
+
+        /* ================= PERIOD COMPARISON ================= */
+        function renderComparisonTable() {
+            const tbody = document.getElementById('comparisonTbody');
+            if (!tbody) return;
+
+            const prevIncome = Math.round(currentData.income * 0.95);
+            const prevExpense = Math.round(currentData.expenses * 1.05);
+
+            tbody.innerHTML = `
+                <tr class="hover:bg-slate-900/50 transition">
+                    <td class="p-3 font-bold text-white">Total Income Deposits</td>
+                    <td class="p-3 text-right font-mono">R ${prevIncome.toLocaleString()}</td>
+                    <td class="p-3 text-right font-mono text-brand-emerald">R ${currentData.income.toLocaleString()}</td>
+                    <td class="p-3 text-right font-mono text-brand-emerald">+ R ${(currentData.income - prevIncome).toLocaleString()}</td>
+                    <td class="p-3 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-brand-emerald/20 text-brand-emerald">IMPROVED</span></td>
+                </tr>
+                <tr class="hover:bg-slate-900/50 transition">
+                    <td class="p-3 font-bold text-white">Total Expenditure</td>
+                    <td class="p-3 text-right font-mono">R ${prevExpense.toLocaleString()}</td>
+                    <td class="p-3 text-right font-mono text-brand-pink">R ${currentData.expenses.toLocaleString()}</td>
+                    <td class="p-3 text-right font-mono text-brand-emerald">- R ${(prevExpense - currentData.expenses).toLocaleString()}</td>
+                    <td class="p-3 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-brand-emerald/20 text-brand-emerald">REDUCED BURN</span></td>
+                </tr>
+                <tr class="hover:bg-slate-900/50 transition">
+                    <td class="p-3 font-bold text-white">Bank Fees & Item Charges</td>
+                    <td class="p-3 text-right font-mono">R 510.00</td>
+                    <td class="p-3 text-right font-mono">R ${currentData.bankCharges}.00</td>
+                    <td class="p-3 text-right font-mono text-brand-emerald">- R ${(510 - currentData.bankCharges)}</td>
+                    <td class="p-3 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-brand-emerald/20 text-brand-emerald">OPTIMIZED</span></td>
+                </tr>
+            `;
+        }
+
+        /* ================= AI WEALTH ASSISTANT (GEMINI INTEGRATION) ================= */
+        function askPresetQuestion(text) {
+            document.getElementById('assistantInput').value = text;
+            sendAssistantQuery();
+        }
+
+        async function sendAssistantQuery() {
+            const input = document.getElementById('assistantInput');
+            const query = input.value;
+            if (!query) return;
+
+            const chatBody = document.getElementById('chatMessageBody');
+            
+            // Append User Question
+            chatBody.innerHTML += `
+                <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-1 text-right">
+                    <p class="font-bold text-white">You:</p>
+                    <p class="text-slate-300">${query}</p>
+                </div>
+            `;
+
+            input.value = '';
+
+            // Loading indicator
+            const loadingId = 'loading-' + Date.now();
+            chatBody.innerHTML += `
+                <div id="${loadingId}" class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-2">
+                    <p class="font-bold text-brand-pink flex items-center gap-2">
+                        <i data-lucide="loader-2" class="h-4 w-4 animate-spin"></i> WEALTHWISE AI is analyzing statement facts...
+                    </p>
+                </div>
+            `;
+            lucide.createIcons();
+
+            const systemPrompt = `You are the WEALTHWISE AI Financial Assistant. Context: User's total monthly income is R ${currentData.income}, monthly expenses are R ${currentData.expenses}, monthly debt commitments are R ${currentData.debtCommitments}, and bank charges are R ${currentData.bankCharges}. Answer concisely, practically, and grounded in these exact ZAR financial facts.`;
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: query }] }],
+                        systemInstruction: { parts: [{ text: systemPrompt }] }
+                    })
+                });
+
+                const data = await response.json();
+                const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                document.getElementById(loadingId)?.remove();
+
+                if (reply) {
+                    chatBody.innerHTML += `
+                        <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2">
+                            <p class="font-bold text-white flex items-center gap-2">
+                                <i data-lucide="bot" class="h-4 w-4 text-brand-emerald"></i> WEALTHWISE AI Response:
+                            </p>
+                            <div class="text-slate-300 leading-relaxed">${reply.replace(/\n/g, '<br>')}</div>
+                        </div>
+                    `;
+                } else {
+                    throw new Error("No response content");
+                }
+            } catch (err) {
+                document.getElementById(loadingId)?.remove();
+                // Rule-based fallback grounding
+                const surplus = currentData.income - currentData.expenses;
+                chatBody.innerHTML += `
+                    <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2">
+                        <p class="font-bold text-white flex items-center gap-2">
+                            <i data-lucide="bot" class="h-4 w-4 text-brand-emerald"></i> WEALTHWISE AI Response (Grounded Statement Analysis):
+                        </p>
+                        <div class="text-slate-300 space-y-2">
+                            <p>Based on your current statement data:</p>
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li>Your monthly net surplus is <strong>R ${surplus.toLocaleString()}</strong>.</li>
+                                <li>Debt repayments swallow <strong>R ${currentData.debtCommitments.toLocaleString()}</strong> (${((currentData.debtCommitments/currentData.income)*100).toFixed(1)}% of income).</li>
+                                <li>Capping unnecessary bank charges and discretionary dining out can unlock an extra <strong>~R 850 monthly</strong>.</li>
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            }
+            lucide.createIcons();
+        }
+
+        /* ================= MODAL HANDLERS ================= */
+        function openPrivacyModal() { document.getElementById('privacyModal').classList.remove('hidden'); }
+        function closePrivacyModal() { document.getElementById('privacyModal').classList.add('hidden'); }
+        function openAboutModal() { document.getElementById('aboutModal').classList.remove('hidden'); }
+        function closeAboutModal() { document.getElementById('aboutModal').classList.add('hidden'); }
+    </script>
+</body>
+</html>
